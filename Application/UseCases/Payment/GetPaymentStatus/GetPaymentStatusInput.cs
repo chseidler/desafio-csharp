@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Application.UseCases.Payment.GetPaymentStatus;
 
-public record GetPaymentStatusInput(Guid PaymentId) : IRequest<Result<GetPaymentStatusOutput>>;
+public record GetPaymentStatusInput(Guid OrderId) : IRequest<Result<GetPaymentStatusOutput>>;
