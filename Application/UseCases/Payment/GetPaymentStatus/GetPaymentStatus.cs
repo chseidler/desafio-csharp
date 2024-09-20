@@ -1,9 +1,18 @@
-﻿namespace Application.UseCases.Payment.GetPaymentStatus;
+﻿using FluentResults;
+
+namespace Application.UseCases.Payment.GetPaymentStatus;
 
 public class GetPaymentStatus : IGetPaymentStatus
 {
-    public Task<GetPaymentStatusOutput> Handle(GetPaymentStatusInput request, CancellationToken cancellationToken)
+    public async Task<Result<GetPaymentStatusOutput>> Handle(GetPaymentStatusInput request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            throw new NotImplementedException();
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail(ex.Message);
+        }
     }
 }

@@ -1,4 +1,3 @@
-using Api.ApiModels.Response;
 using Application.UseCases.Item;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +13,13 @@ public class ItemsController : ControllerBase
     public ItemsController(IMediator mediator) => _mediator = mediator;
 
     [HttpGet]
-    [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<ListItemsOutput>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListItems(CancellationToken cancellationToken)
     {
-        var output = await _mediator.Send(new ListItemsInput(), cancellationToken);
+        var result = await _mediator.Send(new ListItemsInput(), cancellationToken);
 
-        return Ok(new ApiResponse<IReadOnlyList<ListItemsOutput>>(output));
+        if (result.IsSuccess)
+            return Ok(result.Value);
+
+        return BadRequest(result.Errors.Select(e => e.Message).ToList());
     }
 }

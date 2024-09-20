@@ -1,7 +1,8 @@
-﻿using MediatR;
+﻿using FluentResults;
+using MediatR;
 
 namespace Application.UseCases.Payment.GetPaymentStatus;
 
-public interface IGetPaymentStatus : IRequestHandler<GetPaymentStatusInput, GetPaymentStatusOutput>
+public interface IGetPaymentStatus : IRequestHandler<GetPaymentStatusInput, Result<GetPaymentStatusOutput>>
 {
 }

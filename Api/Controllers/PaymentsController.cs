@@ -1,4 +1,3 @@
-using Api.ApiModels.Response;
 using Application.UseCases.Payment.GetPaymentStatus;
 using Application.UseCases.Payment.MakePayment;
 using Application.UseCases.Payment.RequestRefund;
@@ -16,27 +15,34 @@ public class PaymentsController : ControllerBase
     public PaymentsController(IMediator mediator) => _mediator = mediator;
 
     [HttpPost]
-    [ProducesResponseType(typeof(ApiResponse<MakePaymentOutput>), StatusCodes.Status201Created)]
     public async Task<IActionResult> MakePayment(MakePaymentInput input, CancellationToken cancellationToken)
     {
-        var output = await _mediator.Send(input, cancellationToken);
-        return CreatedAtAction(nameof(MakePayment), new { id = output.PaymentId }, new ApiResponse<MakePaymentOutput>(output));
+        var result = await _mediator.Send(input, cancellationToken);
+        if (result.IsSuccess)
+            return CreatedAtAction(nameof(MakePayment), new { id = result.Value.PaymentId }, result.Value);
+
+        return BadRequest(result.Errors.Select(e => e.Message).ToList());
     }
 
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(ApiResponse<GetPaymentStatusOutput>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPaymentStatus(Guid id, CancellationToken cancellationToken)
     {
-        var output = await _mediator.Send(new GetPaymentStatusInput(id), cancellationToken);
-        return Ok(new ApiResponse<GetPaymentStatusOutput>(output));
+        var result = await _mediator.Send(new GetPaymentStatusInput(id), cancellationToken);
+
+        if (result.IsSuccess)
+            return Ok(result.Value);
+
+        return BadRequest(result.Errors.Select(e => e.Message).ToList());
     }
 
     [HttpPost("{id:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ApiResponse<RequestRefundOutput>), StatusCodes.Status200OK)]
     public async Task<IActionResult> RequestRefund(Guid id, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new RequestRefundInput(id), cancellationToken);
-        return NoContent();
+        var result = await _mediator.Send(new RequestRefundInput(id), cancellationToken);
+
+        if (result.IsSuccess)
+            return Ok(result.Value);
+
+        return BadRequest(result.Errors.Select(e => e.Message).ToList());
     }
 }

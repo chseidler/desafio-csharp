@@ -3,6 +3,7 @@ using Domain.Entity;
 using Domain.Enum;
 using Domain.Event;
 using Domain.Repository;
+using FluentResults;
 using MediatR;
 
 namespace Application.UseCases.Payment.MakePayment;
@@ -20,34 +21,41 @@ public class MakePayment : IMakePayment
         _mediator = mediator;
     }
 
-    public async Task<MakePaymentOutput> Handle(MakePaymentInput request, CancellationToken cancellationToken)
+    public async Task<Result<MakePaymentOutput>> Handle(MakePaymentInput request, CancellationToken cancellationToken)
     {
-        var order = await _orderRepository.GetByIdAsync(request.OrderId, cancellationToken);
+        try
+        {
+            var order = await _orderRepository.GetByIdAsync(request.OrderId, cancellationToken);
 
-        if (order is null)
-            throw new KeyNotFoundException($"Order with ID {request.OrderId} not found.");
+            if (order is null)
+                return Result.Fail($"Order with ID {request.OrderId} not found.");
 
-        if (order.State != OrderStateEnum.AguardandoProcessamento)
-            throw new InvalidOperationException("Order must be in 'Aguardando Processamento' state to process payment.");
+            if (order.State != OrderStateEnum.AguardandoProcessamento)
+                return Result.Fail("Order must be in 'Aguardando Processamento' state to process payment.");
 
-        order.StartPaymentProcess();
-        await DomainEvents.DispatchNotifications(_mediator);
+            order.StartPaymentProcess();
+            await DomainEvents.DispatchNotifications(_mediator);
 
-        var paymentService = PaymentFactory.CreatePayment(request.Method);
-        var (paymentSuccessful, finalAmout) = paymentService.ProcessPayment(order);
+            var paymentService = PaymentFactory.CreatePayment(request.Method);
+            var (paymentSuccessful, finalAmout) = paymentService.ProcessPayment(order);
 
-        if (paymentSuccessful)
-            order.CompletePayment(finalAmout);
-        else
-            order.FailPayment();
-        await DomainEvents.DispatchNotifications(_mediator);
+            if (paymentSuccessful)
+                order.CompletePayment(finalAmout);
+            else
+                order.FailPayment();
+            await DomainEvents.DispatchNotifications(_mediator);
 
-        var paymentStatus = paymentSuccessful ? PaymentStatusEnum.Aprovado : PaymentStatusEnum.Reprovado;
-        var payment = new PaymentDomain(order.Id, finalAmout, request.Method, paymentStatus);
+            var paymentStatus = paymentSuccessful ? PaymentStatusEnum.Aprovado : PaymentStatusEnum.Reprovado;
+            var payment = new PaymentDomain(order.Id, finalAmout, request.Method, paymentStatus);
 
-        await _orderRepository.UpdateAsync(order, cancellationToken);
-        await _paymentRepository.SaveAsync(payment, cancellationToken);
+            await _orderRepository.UpdateAsync(order, cancellationToken);
+            await _paymentRepository.SaveAsync(payment, cancellationToken);
 
-        return new MakePaymentOutput(order.Id, paymentSuccessful);
+            return Result.Ok(new MakePaymentOutput(order.Id, paymentSuccessful));
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail(ex.Message);
+        }
     }
 }

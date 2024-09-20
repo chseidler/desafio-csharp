@@ -1,4 +1,3 @@
-using Api.ApiModels.Response;
 using Application.UseCases.Item;
 using Application.UseCases.Order.CreateOrder;
 using Application.UseCases.Order.GetOrderStatus;
@@ -10,16 +9,19 @@ using System.Text.Json.Serialization;
 
 namespace Api.Configurations.Policies;
 
-[JsonSerializable(typeof(ApiResponse<IReadOnlyList<ListItemsOutput>>))]
-[JsonSerializable(typeof(ApiResponse<CreateOrderOutput>))]
-[JsonSerializable(typeof(ApiResponse<GetOrderStatusOutput>))]
+[JsonSerializable(typeof(IReadOnlyList<ListItemsOutput>))]
+[JsonSerializable(typeof(List<ListItemsOutput>))]
+[JsonSerializable(typeof(CreateOrderOutput))]
+[JsonSerializable(typeof(GetOrderStatusOutput))]
 [JsonSerializable(typeof(CreateOrderInput))]
-[JsonSerializable(typeof(ApiResponse<MakePaymentOutput>))]
-[JsonSerializable(typeof(ApiResponse<MakePaymentInput>))]
-[JsonSerializable(typeof(ApiResponse<GetPaymentStatusOutput>))]
-[JsonSerializable(typeof(ApiResponse<RequestRefundOutput>))]
+[JsonSerializable(typeof(MakePaymentOutput))]
+[JsonSerializable(typeof(MakePaymentInput))]
+[JsonSerializable(typeof(GetPaymentStatusOutput))]
+[JsonSerializable(typeof(RequestRefundOutput))]
 [JsonSerializable(typeof(Guid))]
-[JsonSerializable(typeof(ProblemDetails))]
+[JsonSerializable(typeof(List<String>))]
+[JsonSerializable(typeof(IEnumerable<String>))]
+[JsonSerializable(typeof(ValidationProblemDetails))]
 public partial class MyJsonContext : JsonSerializerContext
 {
 }

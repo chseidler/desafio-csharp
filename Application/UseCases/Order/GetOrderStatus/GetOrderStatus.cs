@@ -1,4 +1,5 @@
 ﻿using Domain.Repository;
+using FluentResults;
 
 namespace Application.UseCases.Order.GetOrderStatus;
 
@@ -11,19 +12,26 @@ public class GetOrderStatus : IGetOrderStatus
         _orderRepository = orderRepository;
     }
 
-    public async Task<GetOrderStatusOutput> Handle(GetOrderStatusInput request, CancellationToken cancellationToken)
+    public async Task<Result<GetOrderStatusOutput>> Handle(GetOrderStatusInput request, CancellationToken cancellationToken)
     {
-        var order = await _orderRepository.GetByIdAsync(request.OrderId, cancellationToken);
+        try
+        {
+            var order = await _orderRepository.GetByIdAsync(request.OrderId, cancellationToken);
 
-        if (order is null)
-            throw new KeyNotFoundException($"Order with ID {request.OrderId} not found.");
+            if (order is null)
+                return Result.Fail($"Order with ID {request.OrderId} not found.");
 
-        var orderOutput = new GetOrderStatusOutput(
-            order.Id,
-            order.State,
-            order.Total,
-            order.Items.Select(i => new ItemOutput(i.Id, i.Name, i.Price)).ToList());
+            var orderOutput = new GetOrderStatusOutput(
+                order.Id,
+                order.State,
+                order.Total,
+                order.Items.Select(i => new ItemOutput(i.Id, i.Name, i.Price)).ToList());
 
-        return orderOutput;
+            return Result.Ok(orderOutput);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail(ex.Message);
+        }
     }
 }

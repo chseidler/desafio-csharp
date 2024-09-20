@@ -1,7 +1,8 @@
-﻿using MediatR;
+﻿using FluentResults;
+using MediatR;
 
 namespace Application.UseCases.Item;
 
-public class ListItemsInput : IRequest<IReadOnlyList<ListItemsOutput>>
+public class ListItemsInput : IRequest<Result<IReadOnlyList<ListItemsOutput>>>
 {
 }
