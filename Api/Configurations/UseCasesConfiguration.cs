@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Application.UseCases.Item;
 using Domain.Repository;
 using Infrastructure.Email;
+using Infrastructure.PaymentGateway;
 using Infrastructure.Repositories;
 
 namespace Api.Configurations;
@@ -32,6 +33,7 @@ public static class UseCasesConfiguration
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddTransient<IEmailService, EmailService>();
+        services.AddTransient<IPaymentGateway, FakePaymentGateway>();
 
         return services;
     }

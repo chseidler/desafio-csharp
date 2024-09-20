@@ -1,4 +1,5 @@
-﻿using Application.UseCases.Payment.PaymentMethod;
+﻿using Application.Interfaces;
+using Application.UseCases.Payment.PaymentMethod;
 using Domain.Entity;
 using Domain.Enum;
 using Domain.Event;
@@ -13,12 +14,14 @@ public class MakePayment : IMakePayment
     private readonly IOrderRepository _orderRepository;
     private readonly IPaymentRepository _paymentRepository;
     private readonly IMediator _mediator;
+    private readonly IPaymentGateway _paymentGateway;
 
-    public MakePayment(IOrderRepository orderRepository, IPaymentRepository paymentRepository, IMediator mediator)
+    public MakePayment(IOrderRepository orderRepository, IPaymentRepository paymentRepository, IMediator mediator, IPaymentGateway paymentGateway)
     {
         _orderRepository = orderRepository;
         _paymentRepository = paymentRepository;
         _mediator = mediator;
+        _paymentGateway = paymentGateway;
     }
 
     public async Task<Result<MakePaymentOutput>> Handle(MakePaymentInput request, CancellationToken cancellationToken)
@@ -36,8 +39,8 @@ public class MakePayment : IMakePayment
             order.StartPaymentProcess();
             await DomainEvents.DispatchNotifications(_mediator);
 
-            var paymentService = PaymentFactory.CreatePayment(request.Method);
-            var (paymentSuccessful, finalAmout) = paymentService.ProcessPayment(order);
+            var paymentService = PaymentFactory.CreatePayment(request.Method, _paymentGateway);
+            var (paymentSuccessful, finalAmout) = await paymentService.ProcessPayment(order);
 
             if (paymentSuccessful)
                 order.CompletePayment(finalAmout);
@@ -50,6 +53,9 @@ public class MakePayment : IMakePayment
 
             await _orderRepository.UpdateAsync(order, cancellationToken);
             await _paymentRepository.SaveAsync(payment, cancellationToken);
+
+            if (!paymentSuccessful)
+                return Result.Fail("Payment failed.");
 
             return Result.Ok(new MakePaymentOutput(order.Id, paymentSuccessful));
         }

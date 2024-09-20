@@ -1,18 +1,44 @@
-﻿using Domain.Entity;
+﻿using Application.Interfaces;
+using Domain.Entity;
+using Polly;
 
 namespace Application.UseCases.Payment.PaymentMethod;
 
 public class DebitoPayment : IPayment
 {
-    public (bool IsSuccessful, decimal FinalAmount) ProcessPayment(OrderDomain order)
+    private readonly IPaymentGateway _paymentGateway;
+
+    public DebitoPayment(IPaymentGateway paymentGateway)
     {
-        return (true, order.Total);
+        _paymentGateway = paymentGateway;
+    }
+
+    public async Task<(bool IsSuccessful, decimal FinalAmount)> ProcessPayment(OrderDomain order)
+    {
+        var retryPolicy = Policy
+            .Handle<Exception>()
+            .RetryAsync(3);
+
+        var result = await retryPolicy.ExecuteAsync(async () =>
+        {
+            bool success = await _paymentGateway.ProcessPaymentAsync(order.Total);
+            return success;
+        });
+
+        return (result, order.Total);
     }
 
     public bool CanRefund() => true;
 
-    public void Refund()
+    public async Task Refund(Guid paymentId)
     {
-        Console.WriteLine("Refund with success.");
+        var retryPolicy = Policy
+            .Handle<Exception>()
+            .RetryAsync(3);
+
+        await retryPolicy.ExecuteAsync(async () =>
+        {
+            await _paymentGateway.RefundPaymentAsync(paymentId);
+        });
     }
 }
