@@ -111,23 +111,29 @@ public class OrderDomain
         DomainEvents.Raise(new OrderHasChangedNotificationEvent(Id, State, CustomerId));
     }
 
-    public void ConfirmPayment()
+    public void RequestRefund()
     {
-        // TODO: Emitir evento? Condiçao?
+        if (State != OrderStateEnum.PagamentoConcluido &&
+            State != OrderStateEnum.SeparandoPedido &&
+            State != OrderStateEnum.AguardandoEstoque)
+            throw new InvalidOperationException("Refund can only be requested for orders in or after the 'Pagamento Concluído' state.");
+
+        State = OrderStateEnum.SolicitadoReembolso;
+        DomainEvents.Raise(new OrderHasChangedNotificationEvent(Id, State, CustomerId));
     }
 
-    public void FinalizePayment()
+    public void Refund()
     {
-        // TODO: Emitir evento? Condiçao?
+        if (State != OrderStateEnum.SolicitadoReembolso)
+            throw new InvalidOperationException("Refund can only be executed for orders in 'Solicitado Reembolso' state.");
+
+        State = OrderStateEnum.Cancelado;
+        DomainEvents.Raise(new OrderHasChangedNotificationEvent(Id, State, CustomerId));
     }
 
-    public void Separate()
+    public void NonRefundable(OrderStateEnum oldState)
     {
-        // TODO: Emitir evento? Condiçao?
-    }
-
-    public void Conclude()
-    {
-        // TODO: Emitir evento? Condiçao?
+        State = oldState;
+        DomainEvents.Raise(new OrderHasChangedNotificationEvent(Id, State, CustomerId));
     }
 }

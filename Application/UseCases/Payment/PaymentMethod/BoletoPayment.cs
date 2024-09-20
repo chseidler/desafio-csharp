@@ -8,4 +8,11 @@ public class BoletoPayment : IPayment
     {
         return (true, order.Total);
     }
+
+    public bool CanRefund() => false;
+
+    public void Refund()
+    {
+        throw new InvalidOperationException("Cant`t refund Boleto.");
+    }
 }

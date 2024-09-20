@@ -33,10 +33,10 @@ public class PaymentsController : ControllerBase
 
     [HttpPost("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ApiResponse<RequestRefoundOutput>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<RequestRefundOutput>), StatusCodes.Status200OK)]
     public async Task<IActionResult> RequestRefund(Guid id, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new RequestRefoundInput(id), cancellationToken);
+        await _mediator.Send(new RequestRefundInput(id), cancellationToken);
         return NoContent();
     }
 }

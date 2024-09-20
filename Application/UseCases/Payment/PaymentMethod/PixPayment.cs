@@ -8,4 +8,11 @@ public class PixPayment : IPayment
     {
         return (true, order.Total * 0.95m);
     }
+
+    public bool CanRefund() => false;
+
+    public void Refund()
+    {
+        throw new InvalidOperationException("Cant`t refund Pix.");
+    }
 }

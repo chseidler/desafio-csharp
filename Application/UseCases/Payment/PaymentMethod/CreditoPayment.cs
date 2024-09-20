@@ -8,4 +8,11 @@ public class CreditoPayment : IPayment
     {
         return (true, order.Total);
     }
+
+    public bool CanRefund() => true;
+
+    public void Refund()
+    {
+        Console.WriteLine("Refund with success.");
+    }
 }

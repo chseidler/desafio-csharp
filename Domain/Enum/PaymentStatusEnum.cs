@@ -2,8 +2,7 @@
 
 public enum PaymentStatusEnum
 {
-    AguardandoPagamento,
-    EmAnalise,
     Aprovado,
-    Reprovado
+    Reprovado,
+    Reembolsado
 }

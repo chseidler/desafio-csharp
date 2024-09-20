@@ -42,7 +42,8 @@ public class MakePayment : IMakePayment
             order.FailPayment();
         await DomainEvents.DispatchNotifications(_mediator);
 
-        var payment = new PaymentDomain(order.Id, finalAmout, request.Method, paymentSuccessful);
+        var paymentStatus = paymentSuccessful ? PaymentStatusEnum.Aprovado : PaymentStatusEnum.Reprovado;
+        var payment = new PaymentDomain(order.Id, finalAmout, request.Method, paymentStatus);
 
         await _orderRepository.UpdateAsync(order, cancellationToken);
         await _paymentRepository.SaveAsync(payment, cancellationToken);

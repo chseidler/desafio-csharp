@@ -17,7 +17,7 @@ namespace Api.Configurations.Policies;
 [JsonSerializable(typeof(ApiResponse<MakePaymentOutput>))]
 [JsonSerializable(typeof(ApiResponse<MakePaymentInput>))]
 [JsonSerializable(typeof(ApiResponse<GetPaymentStatusOutput>))]
-[JsonSerializable(typeof(ApiResponse<RequestRefoundOutput>))]
+[JsonSerializable(typeof(ApiResponse<RequestRefundOutput>))]
 [JsonSerializable(typeof(Guid))]
 [JsonSerializable(typeof(ProblemDetails))]
 public partial class MyJsonContext : JsonSerializerContext

@@ -8,5 +8,6 @@ public enum OrderStateEnum
     PagamentoConcluido,
     SeparandoPedido,
     AguardandoEstoque,
-    Concluido
+    Concluido,
+    SolicitadoReembolso
 }
