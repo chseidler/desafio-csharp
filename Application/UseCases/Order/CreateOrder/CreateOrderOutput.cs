@@ -1,3 +1,3 @@
 ﻿namespace Application.UseCases.Order.CreateOrder;
 
-public record CreateOrderOutput(Guid OrderId);
+public record CreateOrderOutput(Guid OrderId, decimal totalPrice);

@@ -9,4 +9,9 @@ public class ItemRepository : IItemRepository
     {
         throw new NotImplementedException();
     }
+
+    public Task<IReadOnlyList<ItemDomain>> GetItemsByIdsAsync(List<Guid> ids, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

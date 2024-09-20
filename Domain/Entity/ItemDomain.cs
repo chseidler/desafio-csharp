@@ -15,14 +15,8 @@ public class ItemDomain
         QuantityInStock = quantityInStock;
     }
 
-    //public decimal PriceWithDiscount()
-    //{
-    //    decimal discount = ApplyDiscount();
-    //}
-
-    private static decimal ApplyDiscount()
+    public bool CanFulfillOrder(uint quantityRequested)
     {
-        // TODO: aplicar logica desconto
-        return 1m;
+        return QuantityInStock >= quantityRequested;
     }
 }
