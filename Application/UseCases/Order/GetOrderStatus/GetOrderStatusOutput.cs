@@ -2,4 +2,4 @@
 
 namespace Application.UseCases.Order.GetOrderStatus;
 
-public record GetOrderStatusOutput(Guid Id, OrderStateEnum status, decimal amout, List<ItemOutput> items);
+public record GetOrderStatusOutput(Guid Id, OrderStateEnum Status, decimal Amout, List<ItemOutput> Items);

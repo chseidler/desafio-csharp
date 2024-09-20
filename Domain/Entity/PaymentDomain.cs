@@ -10,7 +10,7 @@ public class PaymentDomain
     public PaymentMethodEnum Method { get; private set; }
     public bool IsApproved { get; private set; }
 
-    public PaymentDomain(Guid orderId, decimal amout, PaymentMethodEnum method)
+    public PaymentDomain(Guid orderId, decimal amout, PaymentMethodEnum method, bool IsApproved)
     {
         Id = new Guid();
         OrderId = orderId;
@@ -18,13 +18,4 @@ public class PaymentDomain
         Method = method;
         IsApproved = false;
     }
-
-    public void Process()
-    {
-        if (Method == PaymentMethodEnum.Pix)
-            Amount = Amount * 0.90m;
-
-        IsApproved = true;
-    }
-
 }

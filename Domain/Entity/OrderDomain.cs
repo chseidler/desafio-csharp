@@ -1,4 +1,6 @@
 ﻿using Domain.Enum;
+using Domain.Event;
+using Domain.Event.Notification;
 
 namespace Domain.Entity;
 
@@ -9,17 +11,14 @@ public class OrderDomain
     public decimal Total { get; private set; }
     public OrderStateEnum State { get; private set; }
     public DateTime CreatedAt { get; private set; }
+    public Guid CustomerId { get; private set; }
 
-    public OrderDomain(List<(ItemDomain item, uint quantity)> items)
+    public OrderDomain(Guid customerId)
     {
-        ValidateItemsStock(items);
-
         Id = Guid.NewGuid();
-        Items = items.Select(i => i.item).ToList();
-        State = OrderStateEnum.AguardandoProcessamento;
+        Items = [];
         CreatedAt = DateTime.Now;
-
-        CalculateTotalAmount(items);
+        CustomerId = customerId;
     }
 
     private static void ValidateItemsStock(List<(ItemDomain item, uint quantity)> items)
@@ -67,9 +66,49 @@ public class OrderDomain
         return 0;
     }
 
+    public void Create(List<(ItemDomain item, uint quantity)> items)
+    {
+        if (items.Any(i => i.quantity == 0))
+            throw new InvalidOperationException("Order can only be created if all items have more than 1 unit.");
+        ValidateItemsStock(items);
+
+        Items = items.Select(i => i.item).ToList();
+        CalculateTotalAmount(items);
+        State = OrderStateEnum.AguardandoProcessamento;
+
+        DomainEvents.Raise(new OrderHasChangedNotificationEvent(Id, State, CustomerId));
+    }
+
     public void Cancel()
     {
-        // TODO: Emitir evento? Condiçao?
+        if (State != OrderStateEnum.AguardandoProcessamento)
+            throw new InvalidOperationException("Order can only be canceled if it's in 'Aguardando Processamento' state.");
+
+        State = OrderStateEnum.Cancelado;
+        DomainEvents.Raise(new OrderHasChangedNotificationEvent(Id, State, CustomerId));
+    }
+
+    public void StartPaymentProcess()
+    {
+        if (State != OrderStateEnum.AguardandoProcessamento)
+            throw new InvalidOperationException("Order must be in 'Aguardando Processamento' to start payment.");
+
+        State = OrderStateEnum.ProcessandoPagamento;
+        DomainEvents.Raise(new OrderHasChangedNotificationEvent(Id, State, CustomerId));
+    }
+
+    public void CompletePayment(decimal finalAmount)
+    {
+        Total = finalAmount;
+
+        State = OrderStateEnum.PagamentoConcluido;
+        DomainEvents.Raise(new OrderHasChangedNotificationEvent(Id, State, CustomerId));
+    }
+
+    public void FailPayment()
+    {
+        State = OrderStateEnum.Cancelado;
+        DomainEvents.Raise(new OrderHasChangedNotificationEvent(Id, State, CustomerId));
     }
 
     public void ConfirmPayment()

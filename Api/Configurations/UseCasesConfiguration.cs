@@ -1,5 +1,7 @@
+using Application.Interfaces;
 using Application.UseCases.Item;
 using Domain.Repository;
+using Infrastructure.Email;
 using Infrastructure.Repositories;
 
 namespace Api.Configurations;
@@ -13,6 +15,7 @@ public static class UseCasesConfiguration
             cfg.RegisterServicesFromAssemblies(typeof(ListItems).Assembly);
         });
         services.AddRepositories();
+        services.AddServices();
 
         return services;
     }
@@ -22,6 +25,13 @@ public static class UseCasesConfiguration
         services.AddTransient<IItemRepository, ItemRepository>();
         services.AddTransient<IOrderRepository, OrderRepository>();
         services.AddTransient<IPaymentRepository, PaymentRepository>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddTransient<IEmailService, EmailService>();
 
         return services;
     }

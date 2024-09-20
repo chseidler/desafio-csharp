@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Configurations;
 
