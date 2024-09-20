@@ -21,7 +21,7 @@ public class OrderDomain
 
     public void CalculateTotalAmout()
     {
-        Total = Items.Sum(i => i.PriceWithDiscount());
+        Total = Items.Sum(i => i.Price);
     }
 
     public void Cancel()

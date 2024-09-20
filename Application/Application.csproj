@@ -8,8 +8,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Folder Include="Interfaces\" />
-		<Folder Include="UseCases\" />
+		<Folder Include="EventHandlers\Payment\" />
+		<Folder Include="EventHandlers\Stock\" />
+		<Folder Include="EventHandlers\Order\" />
+		<Folder Include="EventHandlers\Notification\" />
+		<Folder Include="UseCases\Stock\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Domain\Domain.csproj" />
 	</ItemGroup>
 
 </Project>
