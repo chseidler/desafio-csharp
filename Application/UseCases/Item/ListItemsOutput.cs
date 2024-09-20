@@ -1,3 +1,3 @@
 ﻿namespace Application.UseCases.Item;
 
-public record ListItemsOutput(Guid Id, decimal Price, uint QuantityInStock);
+public record ListItemsOutput(Guid Id, string Name, decimal Price, uint QuantityInStock);

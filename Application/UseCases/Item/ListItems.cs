@@ -1,16 +1,27 @@
-﻿namespace Application.UseCases.Item;
+﻿using Domain.Repository;
+
+namespace Application.UseCases.Item;
 
 public class ListItems : IListItems
 {
-    public Task<IReadOnlyList<ListItemsOutput>> Handle(ListItemsInput input, CancellationToken cancellationToken)
-    {
-        var orders = new List<ListItemsOutput>
-        {
-            new ListItemsOutput(new Guid(), 10m, 0),
-            new ListItemsOutput(new Guid(), 10m, 0),
-            new ListItemsOutput(new Guid(), 10m, 0),
-        };
+    private readonly IItemRepository _repository;
 
-        return Task.FromResult<IReadOnlyList<ListItemsOutput>>(orders.AsReadOnly());
+    public ListItems(IItemRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public async Task<IReadOnlyList<ListItemsOutput>> Handle(ListItemsInput input, CancellationToken cancellationToken)
+    {
+        var items = await _repository.GetAsync(cancellationToken);
+
+        var output = items.Select(item => new ListItemsOutput(
+            item.Id,
+            item.Name,
+            item.Price,
+            item.QuantityInStock
+        )).ToList();
+
+        return output;
     }
 }
