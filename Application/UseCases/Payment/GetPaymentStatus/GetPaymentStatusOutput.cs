@@ -2,4 +2,4 @@
 
 namespace Application.UseCases.Payment.GetPaymentStatus;
 
-public record GetPaymentStatusOutput(PaymentStatusEnum status);
+public record GetPaymentStatusOutput(PaymentStatusEnum Status);
