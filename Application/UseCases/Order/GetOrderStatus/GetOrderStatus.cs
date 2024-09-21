@@ -25,7 +25,7 @@ public class GetOrderStatus : IGetOrderStatus
                 order.Id,
                 order.State,
                 order.Total,
-                order.Items.Select(i => new ItemOutput(i.Id, i.Name, i.Price)).ToList());
+                order.Items.Select(i => new ItemOutput(i.Item.Id, i.Item.Name, i.Item.Price, i.Quantity)).ToList());
 
             return Result.Ok(orderOutput);
         }

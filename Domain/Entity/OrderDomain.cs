@@ -7,11 +7,13 @@ namespace Domain.Entity;
 public class OrderDomain
 {
     public Guid Id { get; private set; }
-    public List<ItemDomain> Items { get; private set; }
+    public List<OrderItemDomain> Items { get; private set; }
     public decimal Total { get; private set; }
     public OrderStateEnum State { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public Guid CustomerId { get; private set; }
+
+    public OrderDomain() { }
 
     public OrderDomain(Guid customerId)
     {
@@ -72,7 +74,7 @@ public class OrderDomain
             throw new InvalidOperationException("Order can only be created if all items have more than 1 unit.");
         ValidateItemsStock(items);
 
-        Items = items.Select(i => i.item).ToList();
+        Items = items.Select(i => new OrderItemDomain(i.item, i.quantity)).ToList();
         CalculateTotalAmount(items);
         State = OrderStateEnum.AguardandoProcessamento;
 

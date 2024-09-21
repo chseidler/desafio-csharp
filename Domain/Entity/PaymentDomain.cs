@@ -10,6 +10,8 @@ public class PaymentDomain
     public PaymentMethodEnum Method { get; private set; }
     public PaymentStatusEnum Status { get; private set; }
 
+    public PaymentDomain() { }
+
     public PaymentDomain(Guid orderId, decimal amout, PaymentMethodEnum method, PaymentStatusEnum status)
     {
         Id = new Guid();

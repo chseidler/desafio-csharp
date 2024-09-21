@@ -7,6 +7,8 @@ public class ItemDomain
     public decimal Price { get; private set; }
     public uint QuantityInStock { get; private set; }
 
+    public ItemDomain() { }
+
     public ItemDomain(Guid itemId, string name, decimal price, uint quantityInStock)
     {
         Id = itemId;

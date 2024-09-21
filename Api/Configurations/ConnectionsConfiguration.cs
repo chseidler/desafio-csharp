@@ -15,7 +15,8 @@ public static class ConnectionsConfiguration
     private static IServiceCollection AddDbConnection(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DesafioDb");
-        services.AddDbContext<DesafioDbContext>(); // TODO
+        services.AddDbContext<DesafioDbContext>(opt =>
+            opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
         return services;
     }
