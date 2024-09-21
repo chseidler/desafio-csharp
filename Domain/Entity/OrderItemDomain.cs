@@ -3,7 +3,6 @@
 public class OrderItemDomain
 {
     public Guid OrderId { get; private set; }
-    public OrderDomain Order { get; private set; }
     public Guid ItemId { get; private set; }
     public ItemDomain Item { get; private set; }
     public uint Quantity { get; private set; }

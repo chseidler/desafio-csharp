@@ -11,29 +11,22 @@ public class DesafioDbContext : DbContext
     public DbSet<OrderDomain> Orders => Set<OrderDomain>();
     public DbSet<PaymentDomain> Payments => Set<PaymentDomain>();
 
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Configuração para ItemDomain
         modelBuilder.Entity<ItemDomain>().HasKey(i => i.Id);
 
-        // Configuração para OrderDomain
-        modelBuilder.Entity<OrderDomain>().HasKey(o => o.Id);
-
-        // Configuração para OrderItem
-        modelBuilder.Entity<OrderItemDomain>()
-            .HasKey(oi => new { oi.OrderId, oi.ItemId }); // Chave composta
-
-        modelBuilder.Entity<OrderItemDomain>()
-            .HasOne(oi => oi.Order)
-            .WithMany(o => o.Items)
+        modelBuilder.Entity<OrderDomain>()
+            .HasMany(o => o.Items)
+            .WithOne()
             .HasForeignKey(oi => oi.OrderId);
 
         modelBuilder.Entity<OrderItemDomain>()
+            .HasKey(oi => new { oi.OrderId, oi.ItemId });
+
+        modelBuilder.Entity<OrderItemDomain>()
             .HasOne(oi => oi.Item)
-            .WithMany()
-            .HasForeignKey(oi => oi.ItemId);
+            .WithMany();
     }
 }

@@ -1,17 +1,28 @@
 ﻿using Domain.Entity;
 using Domain.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
 public class PaymentRepository : IPaymentRepository
 {
-    public Task<PaymentDomain> GetByOrderIdAsync(Guid id, CancellationToken cancellationToken)
+    private readonly DesafioDbContext _dbContext;
+
+    public PaymentRepository(DesafioDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public Task SaveAsync(PaymentDomain payment, CancellationToken cancellationToken)
+    public async Task<PaymentDomain> GetByOrderIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Payments
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.OrderId == id, cancellationToken);
+    }
+
+    public async Task SaveAsync(PaymentDomain payment, CancellationToken cancellationToken)
+    {
+        await _dbContext.Payments.AddAsync(payment, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

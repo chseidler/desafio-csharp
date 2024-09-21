@@ -1,24 +1,28 @@
 ﻿using Domain.Entity;
 using Domain.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
 public class ItemRepository : IItemRepository
 {
-    public Task<IReadOnlyList<ItemDomain>> GetAsync(CancellationToken cancellationToken)
+    private readonly DesafioDbContext _dbContext;
+
+    public ItemRepository(DesafioDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public Task<IReadOnlyList<ItemDomain>> GetItemsByIdsAsync(List<Guid> ids, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<ItemDomain>> GetAsync(CancellationToken cancellationToken)
     {
-        var items = new List<ItemDomain>
-        {
-            new(new Guid("2d4f68e9-e31d-4e1a-9038-2f2d6fb7839a"), "Item 1", 1000m, 1000),
-            new(new Guid("91c2ca9f-a6a4-4bef-adb0-7fd8c7289a32"), "Item 2", 100m, 1000),
-            new(new Guid("43716b09-36d7-444e-a8c7-8d46697b3aa3"), "Item 3", 10000m, 1000)
-        };
+        return await _dbContext.Items.AsNoTracking().ToListAsync(cancellationToken);
+    }
 
-        return Task.FromResult<IReadOnlyList<ItemDomain>>(items);
+    public async Task<IReadOnlyList<ItemDomain>> GetItemsByIdsAsync(List<Guid> ids, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Items
+            .AsNoTracking()
+            .Where(item => ids.Contains(item.Id))
+            .ToListAsync(cancellationToken);
     }
 }

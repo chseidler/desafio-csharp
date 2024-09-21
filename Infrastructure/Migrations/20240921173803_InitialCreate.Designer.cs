@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DesafioDbContext))]
-    [Migration("20240921161507_InitialCreate")]
+    [Migration("20240921173803_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -118,15 +118,13 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entity.OrderDomain", "Order")
+                    b.HasOne("Domain.Entity.OrderDomain", null)
                         .WithMany("Items")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Item");
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Domain.Entity.OrderDomain", b =>

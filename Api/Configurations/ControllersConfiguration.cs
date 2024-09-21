@@ -6,11 +6,7 @@ public static class ControllersConfiguration
 {
     public static IServiceCollection AddAndConfigureControllers(this IServiceCollection services)
     {
-        services.AddControllers()
-                .AddJsonOptions(jsonOptions =>
-                {
-                    jsonOptions.JsonSerializerOptions.TypeInfoResolver = MyJsonContext.Default;
-                });
+        services.AddControllers();
         services.AddSwaggerDocumentation();
 
         return services;
