@@ -1,5 +1,3 @@
-using Api.Configurations.Policies;
-
 namespace Api.Configurations;
 
 public static class ControllersConfiguration
